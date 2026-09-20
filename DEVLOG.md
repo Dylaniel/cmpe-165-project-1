@@ -73,9 +73,51 @@ log them. **These are AI decisions, not team decisions** — recorded here only 
 
 Issues where AI-written code did not work and had to be fixed. Logged as they happen.
 
-*No issues yet — the build has not started as of the first entries above. If the build
-completes with nothing here, this section will say so explicitly rather than being
-padded.*
+### [2026-09-19 22:27 PDT] Bar chart ignored the category ordering the code claimed to apply
+
+**What the AI wrote.** In the feature 3 dashboard, to control the order of the bars in
+the spend-by-category chart:
+
+```python
+by_category = expenses.groupby("category")["amount"].sum()
+# Keep the fixed category order rather than alphabetical, and drop categories
+# with nothing in them.
+by_category = by_category.reindex(
+    [category for category in CATEGORIES if category in by_category.index]
+)
+st.bar_chart(by_category)
+```
+
+The intent was to plot the bars in the app's own category order —
+Food, Supplies, Travel, Equipment, Marketing, Other.
+
+**What went wrong.** The rendered chart's x-axis read **Equipment, Food, Marketing,
+Other, Supplies, Travel** — plain alphabetical order, not the order the code set up.
+`st.bar_chart` sorts the axis itself and ignores the order of the Series index it is
+handed, so the `reindex` call changed nothing on screen. The second half of the comment
+was also wrong: `groupby` already omits categories that have no expenses, so the
+filtering in the list comprehension was never doing anything either.
+
+This was caught by reading the axis labels off the running app, not by reasoning about
+the code — the code looked correct and ran without error. A test that only asserted the
+totals would have passed while the chart stayed wrong.
+
+**How it was fixed.** The `reindex` was removed as dead code and the misleading comment
+replaced with one that states what actually happens:
+
+```python
+# Categories with no expenses are left out by groupby. st.bar_chart sorts the
+# axis alphabetically itself, so no ordering is imposed here.
+by_category = expenses.groupby("category")["amount"].sum()
+st.bar_chart(by_category)
+```
+
+Forcing a custom bar order in Streamlit means dropping down to an Altair chart with an
+explicit axis sort. That was judged not worth the extra dependency surface and code for
+this project: alphabetical is a perfectly readable order for six categories, and the
+project brief says to keep the app minimal. **Accepting the default was a deliberate
+choice, not an oversight** — recorded here so the ordering is not mistaken for a bug
+later.
 
 ---
 

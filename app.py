@@ -98,6 +98,36 @@ st.caption("[ORGANIZATION] — expense tracking for the club treasurer")
 expenses = load_expenses()
 
 # --------------------------------------------------------------------------
+# Dashboard
+# --------------------------------------------------------------------------
+
+st.header("Dashboard")
+
+if expenses.empty:
+    st.info("No expenses yet — the dashboard fills in once you add one.")
+else:
+    total_spend = expenses["amount"].sum()
+    unreimbursed = expenses.loc[
+        expenses["status"].isin(UNREIMBURSED_STATUSES), "amount"
+    ].sum()
+
+    total_column, unreimbursed_column = st.columns(2)
+    total_column.metric("Total spend", money(total_spend))
+    unreimbursed_column.metric("Still unreimbursed", money(unreimbursed))
+    st.caption(
+        "Unreimbursed = Submitted + Approved. An expense counts as unreimbursed "
+        "until the money has actually gone out."
+    )
+
+    st.subheader("Spend by category")
+    # Categories with no expenses are left out by groupby. st.bar_chart sorts the
+    # axis alphabetically itself, so no ordering is imposed here.
+    by_category = expenses.groupby("category")["amount"].sum()
+    st.bar_chart(by_category)
+
+    st.caption("The dashboard covers all expenses; the filters below do not change it.")
+
+# --------------------------------------------------------------------------
 # Add an expense
 # --------------------------------------------------------------------------
 
