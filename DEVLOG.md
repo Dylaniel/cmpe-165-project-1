@@ -166,6 +166,27 @@ Resolution: invoke `python.exe` by absolute path once to create `.venv`, then us
 application restart is needed. **Lesson recorded below** — "command not found" is evidence
 about the shell, not proof about the machine.
 
+**[2026-09-19 22:32 PDT] Windows path-length limit broke `pip install` during the sanity check.**
+The final sanity check installs the requirements into a throwaway virtual environment
+inside a fresh clone, to prove the README instructions work for someone starting from
+nothing. The first attempt put that clone in the agent's deeply-nested scratchpad
+directory and `pip install` failed:
+
+```
+ERROR: Could not install packages due to an OSError: [WinError 206]
+The filename or extension is too long:
+'...\scratchpad\freshcheck\clone\.venv\Lib\site-packages\streamlit\.agents\skills\
+developing-with-streamlit\assets\templates\apps\dashboard-companies'
+```
+
+Streamlit ships asset files nested many directories deep, and added to an already-long
+parent path this crossed the Windows 260-character `MAX_PATH` limit. **This was a fault
+of the test location, not of the project** — the same install had already succeeded in
+the project directory itself, whose path is short. Resolution: re-ran the check from a
+short temp path, where it passed. Worth knowing for the team: cloning this repo into a
+deeply nested folder can make `pip install streamlit` fail on Windows for reasons that
+have nothing to do with the code.
+
 **[2026-09-19 22:15 PDT] Target directory was not the repository.**
 The directory the build was pointed at was empty with no `.git` in it or any parent, so
 `git remote -v`, `git status`, and `git log` all failed with *"fatal: not a git
@@ -190,4 +211,40 @@ clean tree, one commit (`Initial commit`), containing only `.gitattributes`.
 - **Verify the repo before writing to it.** Two directories with plausible names sat side
   by side and only one was the clone. `git remote -v` took one second and prevented a
   wrong-directory build.
-- *(Further lessons appended as the build proceeds.)*
+- **Code that runs without error is not code that works.** The bar-chart ordering bug
+  raised no exception and produced correct totals; it was only visible by reading the
+  rendered axis in a browser. For UI work, "it ran" and "it did the right thing" are
+  different claims, and only the second one matters.
+- **Verify in a fresh clone, not in the directory you built in.** The build directory
+  already had a working `.venv` and an `expenses.csv`, so it could not prove the README
+  instructions work for a teammate starting from nothing. Cloning to a temp directory
+  tested the real path — including the first-run copy of `sample_expenses.csv`, which
+  never executes in a directory that already has data.
+- **Distinguish a broken project from a broken test environment.** The `WinError 206`
+  failure looked like a dependency problem and was actually an artifact of where the test
+  was run. Re-running it somewhere else was the difference between a real bug report and
+  a wasted fix.
+
+---
+
+## Time actually taken
+
+- **First DEVLOG timestamp:** 2026-09-19 22:17 PDT (team estimate recorded)
+- **Final commit:** 2026-09-19 22:36 PDT
+- **Elapsed: about 19 minutes.**
+
+Measured from the first DEVLOG entry to the last commit; the push to GitHub followed
+within roughly a minute of that. This window covers the three features, the README and
+this log, browser verification of every feature, and the fresh-clone sanity check.
+
+It does **not** include the environment troubleshooting that came before the first
+timestamp — installing Python, discovering `gh` was missing, and locating the correct
+repository directory — which took longer than the build itself.
+
+**Against the estimates:** the team estimated 2 hours and the AI estimated ~40 minutes.
+The actual build came in under both. The honest reading is not that the app was easier
+than anyone thought, but that **the estimates and the measurement are not measuring the
+same thing.** The team's 2 hours was framed as "agents working plus testing" for a build
+considered roughly finished, which reasonably includes the human review time and the
+setup friction that this 19-minute figure explicitly excludes. Treat the 19 minutes as
+agent execution time only, not as the cost of producing the project.
