@@ -33,6 +33,10 @@ def load_expenses():
         shutil.copy(SAMPLE_FILE, DATA_FILE)
     df = pd.read_csv(DATA_FILE)
     df["date"] = pd.to_datetime(df["date"]).dt.date
+    # A blank cell reads back as NaN, which would show up as the text "nan" in the
+    # edit form and break the text search, so normalise it to an empty string.
+    df["submitted_by"] = df["submitted_by"].fillna("")
+    df["description"] = df["description"].fillna("")
     return df
 
 
@@ -60,6 +64,27 @@ def validate(description, amount):
 
 def money(value):
     return f"${value:,.2f}"
+
+
+def apply_filters(df, categories, statuses, search):
+    """Filter by category, status, and a text search over description/submitted_by."""
+    result = df
+    if categories:
+        result = result.loc[result["category"].isin(categories)]
+    if statuses:
+        result = result.loc[result["status"].isin(statuses)]
+    needle = search.strip().lower()
+    if needle:
+        # regex=False keeps punctuation in the search box (e.g. "(" or "+") from
+        # being treated as a regular expression and raising.
+        in_description = result["description"].str.lower().str.contains(
+            needle, na=False, regex=False
+        )
+        in_submitted_by = result["submitted_by"].str.lower().str.contains(
+            needle, na=False, regex=False
+        )
+        result = result.loc[in_description | in_submitted_by]
+    return result
 
 
 # --------------------------------------------------------------------------
@@ -116,10 +141,26 @@ if add_clicked:
 
 st.header("Expenses")
 
+filter_left, filter_middle, filter_right = st.columns(3)
+with filter_left:
+    category_filter = st.multiselect("Filter by category", CATEGORIES)
+with filter_middle:
+    status_filter = st.multiselect("Filter by status", STATUSES)
+with filter_right:
+    search_text = st.text_input("Search description or submitted by")
+
+visible = apply_filters(expenses, category_filter, status_filter, search_text)
+
 if expenses.empty:
     st.info("No expenses recorded yet. Add one above.")
+elif visible.empty:
+    st.warning("No expenses match these filters.")
 else:
-    st.dataframe(expenses, hide_index=True, width="stretch")
+    st.caption(
+        f"Showing {len(visible)} of {len(expenses)} expenses "
+        f"— {money(visible['amount'].sum())} in view"
+    )
+    st.dataframe(visible, hide_index=True, width="stretch")
 
 # --------------------------------------------------------------------------
 # Edit or delete
@@ -127,12 +168,15 @@ else:
 
 st.header("Edit or delete an expense")
 
-if expenses.empty:
-    st.caption("Nothing to edit yet.")
+if visible.empty:
+    st.caption("Nothing to edit — no expenses match the filters above.")
 else:
+    # The picker lists the filtered rows, so the filters double as a way to find an
+    # expense. Selection is by id, so the row edited is always the row chosen even
+    # though its position in the filtered table differs from the full table.
     options = {
         int(row.id): f"#{int(row.id)} — {row.description} ({money(row.amount)})"
-        for row in expenses.itertuples()
+        for row in visible.itertuples()
     }
     selected_id = st.selectbox(
         "Expense",
