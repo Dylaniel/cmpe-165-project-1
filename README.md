@@ -94,6 +94,25 @@ streamlit run app.py
 Streamlit prints a local URL (by default <http://localhost:8501>) and opens it in your
 browser. Press `Ctrl+C` in the terminal to stop the app.
 
+### If activating the virtual environment fails on Windows
+
+PowerShell may refuse step 1 with `UnauthorizedAccess — running scripts is disabled on
+this system`. That is a Windows execution-policy default and has nothing to do with this
+project. You do not need to change any system settings: skip activation and call the
+virtual environment's Streamlit directly instead, which does the same thing in one
+command.
+
+```bash
+.venv\Scripts\streamlit.exe run app.py
+```
+
+Install the requirements the same way if `pip` is not on your path after skipping
+activation:
+
+```bash
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
 **First run:** `expenses.csv` does not exist yet, so the app creates it by copying
 `sample_expenses.csv`, which holds 20 realistic sample expenses. Everything you add,
 edit, or delete afterwards is written to `expenses.csv`; `sample_expenses.csv` is never
