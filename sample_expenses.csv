@@ -1,0 +1,21 @@
+id,date,description,amount,category,submitted_by,status
+1,2026-01-15,Pizza for spring kickoff meeting,86.42,Food,Alex Nguyen,Reimbursed
+2,2026-01-18,Whiteboard markers and sticky notes,24.17,Supplies,Priya Raman,Reimbursed
+3,2026-01-22,Printing for club recruitment flyers,45.00,Marketing,Jordan Lee,Reimbursed
+4,2026-01-29,Arduino starter kits (3x),119.85,Equipment,Sam Okafor,Reimbursed
+5,2026-02-03,Coffee and pastries for workshop,52.30,Food,Alex Nguyen,Reimbursed
+6,2026-02-07,USB cables and power strip,31.76,Supplies,Priya Raman,Approved
+7,2026-02-12,Gas reimbursement for regional meetup,68.40,Travel,Jordan Lee,Approved
+8,2026-02-14,Club t-shirts deposit,240.00,Marketing,Maya Cohen,Approved
+9,2026-02-19,Soldering iron replacement,43.99,Equipment,Sam Okafor,Reimbursed
+10,2026-02-25,Bulk snacks for study night,37.88,Food,Chris Alvarez,Reimbursed
+11,2026-03-02,Poster board and mounting tape,18.50,Supplies,Maya Cohen,Submitted
+12,2026-03-06,Parking fees at industry tour,22.00,Travel,Alex Nguyen,Submitted
+13,2026-03-11,Raspberry Pi 5 for demo project,94.99,Equipment,Sam Okafor,Approved
+14,2026-03-15,Catering for guest speaker night,178.25,Food,Priya Raman,Approved
+15,2026-03-20,Sticker printing for tabling event,60.00,Marketing,Jordan Lee,Submitted
+16,2026-03-26,Batteries and jumper wires,15.63,Supplies,Chris Alvarez,Submitted
+17,2026-04-01,Train tickets for competition travel,145.00,Travel,Maya Cohen,Submitted
+18,2026-04-08,Banner for club fair booth,89.00,Marketing,Jordan Lee,Submitted
+19,2026-04-14,Cleaning supplies for workshop room,12.99,Other,Chris Alvarez,Submitted
+20,2026-04-21,End of year banquet deposit,310.00,Food,Alex Nguyen,Submitted

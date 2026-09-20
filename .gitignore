@@ -1,0 +1,9 @@
+# Local data file (generated on first run from sample_expenses.csv)
+expenses.csv
+
+# Python virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
