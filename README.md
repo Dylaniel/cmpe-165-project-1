@@ -10,8 +10,8 @@ Expenses are stored in a plain CSV file (`expenses.csv`) and read and written wi
 There is no database, no login, and no server setup — the whole application is one file,
 `app.py`.
 
-- **Organization:** [ORGANIZATION]
-- **Team members:** [TEAM MEMBERS]
+- **Organization:** Campus Coders Club
+- **Team members:** Dylan Shanaghy
 
 ## Major features
 
