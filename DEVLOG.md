@@ -139,6 +139,12 @@ The team chose not to supply these during the build. `[TEAM MEMBERS]` and
 `[ORGANIZATION]` placeholders are used in the README and in the app header, and both are
 listed as remaining TODOs.
 
+**[2026-09-21 20:36 PDT] Names finalized.**
+The team supplied the organization (Campus Coders Club) and team member
+(Dylan Shanaghy) and entered them in the README themselves (commit `3e9a709`,
+2026-09-21 20:33). The AI then replaced the one placeholder still left, in the app
+header caption in `app.py`. No placeholders remain.
+
 ---
 
 ## Risks That Occurred

@@ -93,7 +93,7 @@ def apply_filters(df, categories, statuses, search):
 
 st.set_page_config(page_title="Club Expense Tracker", layout="wide")
 st.title("Club Expense Tracker")
-st.caption("[ORGANIZATION] — expense tracking for the club treasurer")
+st.caption("Campus Coders Club — expense tracking for the club treasurer")
 
 expenses = load_expenses()
 
